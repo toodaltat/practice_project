@@ -94,11 +94,11 @@ count_table %>%
 ################################################################################
 
 # Convert text to a Document-Term Matrix (DTM)
-docs <- Corpus(VectorSource(resume_df$responsibilities.1))
+docs <- Corpus(VectorSource(resume_df$responsibilities))
 dtm <- DocumentTermMatrix(docs)
 
 # Apply LDA with 3 topics
-lda_model <- LDA(dtm, k = 3, control = list(seed = 1234))
+lda_model <- LDA(dtm, k = 5, control = list(seed = 1234))
 
 # View topics
 job_responsibilties <- terms(lda_model, 5)  # Get top 5 words for each topic
@@ -122,7 +122,52 @@ print(skill_overview)
 # Inspection
 ################################################################################
 
-View(resume_df)
+# Load necessary libraries
+df <- resume_df
+
+# Sample stopwords list (you can expand this list or use a package)
+stopwords_english <- c("a", "about", "above", "after", "again", "against", "all", "am", "an", "and", "any", "are", "aren't", "as", "at", "be", "because", "been", "before", "being", "below", "between", "both", "but", "by", "can't", "cannot", "could", "couldn't", "did", "didn't", "does", "doesn't", "don't", "during", "each", "few", "for", "from", "further", "had", "hadn't", "has", "hasn't", "haven't", "having", "he", "he's", "her", "here", "here's", "hers", "herself", "him", "himself", "his", "how", "how's", "howsoever", "i", "i'm", "i've", "i'd", "i'll", "i'm", "i'mn't", "if", "if's", "in", "insofar", "into", "is", "isn't", "it", "it's", "it'll", "it'snt", "itself", "just", "more", "moreover", "no", "nor", "not", "of", "of's", "off", "on", "on's", "once", "only", "or", "other", "others", "ought", "our", "ours", "ourselves", "out", "outside", "over", "own", "same", "than", "that", "that'll", "that's", "that'sn't", "thatsoever", "the", "the's", "themselves", "them", "themself", "there", "there's", "thereafter", "therefore", "where", "where's", "who", "who's", "whose", "why", "why's", "whysoever", "with", "within", "without")
+
+# Preprocess Text function
+preprocess_text <- function(text) {
+  # Convert to lowercase
+  clean_text <- tolower(text)
+  
+  # Replace punctuation with spaces
+  clean_text <- gsub("[.;:|\\%\\[\\]()\\r\\n\\*]+", " ", clean_text)
+  
+  # Replace single hyphens with spaces
+  clean_text <- gsub("\\s-\\s", " ", clean_text)
+  
+  # Split by commas and remove stopwords
+  tokens <- unlist(strsplit(clean_text, ","))
+  processed_tokens <- tokens[!(tokens %in% stopwords_english)]
+  
+  return(processed_tokens)
+}
+
+# Apply the preprocess_text function
+df$clean_skills <- sapply(df$skills, preprocess_text)
+
+# Show the processed sample
+print(df)
+
+# Get the length of tokens in clean_skills
+df$skill_count <- sapply(df$clean_skills, function(x) length(strsplit(x, ",")[[1]]))
+
+# Sort skill counts (descending)
+df_sorted <- df[order(-df$skill_count), ]
+print(df_sorted)
+
+# Get top 10 most common words
+all_words <- unlist(df$clean_skills)
+word_table <- table(all_words)
+top_words <- sort(word_table, decreasing = TRUE)[1:10]
+top_words_df <- data.frame(Common_words = names(top_words), count = as.integer(top_words))
+
+# Print the top words table
+print(top_words_df)
+
 
 
 ################################################################################
