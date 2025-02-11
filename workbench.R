@@ -1,55 +1,15 @@
 ################################################################################
-# Loading libraries
-################################################################################
-
-library(tidyverse)
-library(dplyr)
-library(knitr)
-library(kableExtra)
-library(topicmodels)
-library(tm)
-
-current_dir <- getwd()
-
-################################################################################
-# Loading dataset
-################################################################################
-
-resume_file <- file.path(current_dir, 'data/resume_data.csv')
-
-resume_df <- read_csv(resume_file)
-
-################################################################################
-# Cleaning
-################################################################################
-
-# input: resume_df
-
-# intent: dropping unwanted columns, removing out of place characters.
-
-# output: resume_df
-
-resume_df <- resume_df %>% select(-address, -passing_years, -educational_results,
-                                  -result_types, -company_urls, -start_dates, -end_dates,
-                                  -locations, -extra_curricular_activity_types, -extra_curricular_organization_names,
-                                  -extra_curricular_organization_links, -role_positions, -certification_providers, -certification_skills,
-                                  -online_links, -issue_dates, -expiry_dates, -age_requirement)
-
-resume_df[] <- lapply(resume_df, function(x) {
-  x <- gsub("\\[\\]", "", x)
-  x <- gsub("^\\[|\\]$", "", x)
-  x <- gsub("'", "", x)
-  return(x)
-})
-
-
-################################################################################
 # Crafting appropriate dataframes
 ################################################################################
 
 # input: resume_df
 
 # output: language_table
+
+
+
+
+
 
 # Building dataframe holding persons language abilities.
 spoken_lng_df <- resume_df %>% select(languages, proficiency_levels)
@@ -128,23 +88,7 @@ df <- resume_df
 # Sample stopwords list (you can expand this list or use a package)
 stopwords_english <- c("a", "about", "above", "after", "again", "against", "all", "am", "an", "and", "any", "are", "aren't", "as", "at", "be", "because", "been", "before", "being", "below", "between", "both", "but", "by", "can't", "cannot", "could", "couldn't", "did", "didn't", "does", "doesn't", "don't", "during", "each", "few", "for", "from", "further", "had", "hadn't", "has", "hasn't", "haven't", "having", "he", "he's", "her", "here", "here's", "hers", "herself", "him", "himself", "his", "how", "how's", "howsoever", "i", "i'm", "i've", "i'd", "i'll", "i'm", "i'mn't", "if", "if's", "in", "insofar", "into", "is", "isn't", "it", "it's", "it'll", "it'snt", "itself", "just", "more", "moreover", "no", "nor", "not", "of", "of's", "off", "on", "on's", "once", "only", "or", "other", "others", "ought", "our", "ours", "ourselves", "out", "outside", "over", "own", "same", "than", "that", "that'll", "that's", "that'sn't", "thatsoever", "the", "the's", "themselves", "them", "themself", "there", "there's", "thereafter", "therefore", "where", "where's", "who", "who's", "whose", "why", "why's", "whysoever", "with", "within", "without")
 
-# Preprocess Text function
-preprocess_text <- function(text) {
-  # Convert to lowercase
-  clean_text <- tolower(text)
-  
-  # Replace punctuation with spaces
-  clean_text <- gsub("[.;:|\\%\\[\\]()\\r\\n\\*]+", " ", clean_text)
-  
-  # Replace single hyphens with spaces
-  clean_text <- gsub("\\s-\\s", " ", clean_text)
-  
-  # Split by commas and remove stopwords
-  tokens <- unlist(strsplit(clean_text, ","))
-  processed_tokens <- tokens[!(tokens %in% stopwords_english)]
-  
-  return(processed_tokens)
-}
+----
 
 # Apply the preprocess_text function
 df$clean_skills <- sapply(df$skills, preprocess_text)
