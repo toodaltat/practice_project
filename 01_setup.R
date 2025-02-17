@@ -10,7 +10,7 @@ source("00_libraries.R")
 
 # input: resume_df
 
-# intent: dropping unwanted columns.
+# intent: dropping unwanted columns
 
 # output: resume_df
 
@@ -24,6 +24,13 @@ resume_df <- resume_df %>% select(-address, -passing_years, -educational_results
 ################################################################################
 # Setting up tools
 ################################################################################
+
+# input: void
+
+# intent: build functions for cleaning
+
+# output: "preprocess_text" function
+
 
 # Preprocess Text function
 stopwords_english <- stopwords("en")
