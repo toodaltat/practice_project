@@ -115,5 +115,66 @@ print(top_words_df)
 
 
 ################################################################################
+library(tm)
+library(topicmodels)
+library(knitr)
+library(future)
+library(future.apply)
+
+# Function to perform LDA using parallel processing
+perform_lda <- function(data, column_name, num_topics = 3, num_words = 5, seed = 1234, workers = availableCores() - 1) {
+  
+  # Set up parallel processing
+  plan(multisession, workers = workers)
+  
+  # Convert text to a Document-Term Matrix (DTM)
+  docs <- Corpus(VectorSource(data[[column_name]]))
+  dtm <- DocumentTermMatrix(docs)
+  
+  # Remove empty rows
+  row_sums <- rowSums(as.matrix(dtm))
+  dtm <- dtm[row_sums > 0, ]
+  
+  # Fit LDA model in parallel
+  lda_model <- future({
+    LDA(dtm, k = num_topics, control = list(seed = seed))
+  }) %...>% value()
+  
+  # Extract top words per topic
+  topic_terms <- terms(lda_model, num_words)
+  
+  # Convert matrix output to a data frame
+  topic_df <- as.data.frame(topic_terms)
+  
+  # Rename columns for clarity
+  colnames(topic_df) <- paste("Topic", 1:num_topics)
+  
+  # Create a dynamic caption using the column name
+  caption_text <- paste("Top Words per Topic (LDA Model) for", column_name)
+  
+  # Reset future plan back to sequential (prevents issues with nested parallelism)
+  plan(sequential)
+  
+  # Return a formatted table using knitr::kable()
+  return(kable(topic_df, caption = caption_text))
+}
+
+# Example usage
+perform_lda(resume_df, "responsibilities")
 
 ################################################################################
+
+# Define words you want to filter by
+#keywords <- c("data", "analysis")
+
+# Filter rows where 'responsibilities' contains any of the keywords
+#filtered_df <- resume_df %>%
+#  filter(str_detect(responsibilities, str_c(keywords, collapse = "|")))
+
+# View the result
+
+#summary(filtered_df)
+
+
+
+

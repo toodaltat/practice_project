@@ -17,7 +17,7 @@ current_dir <- getwd()
 plan(multicore, workers = availableCores() - 1)
 
 ################################################################################
-# Loading dataset
+# Loading data set
 ################################################################################
 
 resume_file <- file.path(current_dir, 'data/resume_data.csv')

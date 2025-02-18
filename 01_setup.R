@@ -14,6 +14,7 @@ source("00_libraries.R")
 
 # output: resume_df
 
+
 resume_df <- resume_df %>% select(-address, -passing_years, -educational_results,
                                   -result_types, -company_urls, -start_dates, -end_dates,
                                   -locations, -extra_curricular_activity_types, -extra_curricular_organization_names,
@@ -60,6 +61,53 @@ preprocess_text <- function(text) {
   return(cleaned_text)
 }
 
+################################################################################
 
+# input: void
+
+# intent: LDA model function
+
+# output: perform_lda
+
+
+# Function to perform LDA using parallel processing
+perform_lda <- function(data, column_name, num_topics = 3, num_words = 5, seed = 1234, workers = availableCores() - 1) {
+  
+  # Set up parallel processing
+  plan(multisession, workers = workers)
+  
+  # Convert text to a Document-Term Matrix (DTM)
+  docs <- Corpus(VectorSource(data[[column_name]]))
+  dtm <- DocumentTermMatrix(docs)
+  
+  # Remove empty rows
+  row_sums <- rowSums(as.matrix(dtm))
+  dtm <- dtm[row_sums > 0, ]
+  
+  # Fit LDA model in parallel
+  lda_model <- future({
+    LDA(dtm, k = num_topics, control = list(seed = seed))
+  })
+  lda_model <- value(lda_model)
+  
+  # Extract top words per topic
+  topic_terms <- terms(lda_model, num_words)
+  
+  # Convert matrix output to a data frame
+  topic_df <- as.data.frame(topic_terms)
+  
+  # Rename columns for clarity
+  colnames(topic_df) <- paste("Topic", 1:num_topics)
+  
+  # Create a dynamic caption using the column name
+  caption_text <- paste("Top Words per Topic (LDA Model) for", column_name)
+  
+  # Reset future plan back to sequential (prevents issues with nested parallelism)
+  plan(sequential)
+  
+  # Return a formatted table using knitr::kable()
+  return(kable(topic_df, caption = caption_text))
+}
 
 ################################################################################
+
