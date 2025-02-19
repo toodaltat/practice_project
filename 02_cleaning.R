@@ -28,10 +28,7 @@ resume_df[columns_to_process] <- future_lapply(resume_df[columns_to_process], fu
 ################################################################################
 
 #
-institution_removal <- c("college", "state", "institute", "technology", "school", 
-                         "engineering", "university", "national", "none", "technical", 
-                         "new", "high", "business", "graduate", "science", "city",
-                         "iit", "iiit")
+institution_removal <- c("none", "na", "NA", "hs", "iit", "isi", "k", "g", "r", "l", "p", "il", "ï", "kmpg", "n", "mras", "srmu", "m")
 
 # Correctly format regex pattern
 pattern <- paste0("\\b(", paste(institution_removal, collapse = "|"), ")\\b")

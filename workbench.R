@@ -177,4 +177,47 @@ perform_lda(resume_df, "responsibilities")
 
 
 
+generate_bigrams <- function(data, column, score_column, score_threshold = 80, max_n = 5) {
+  
+  # Compute average word count per row
+  avg_word_count <- data %>%
+    mutate(word_count = str_count(.data[[column]], "\\S+")) %>%
+    summarise(avg_words = mean(word_count, na.rm = TRUE)) %>%
+    pull(avg_words)
+  
+  # Cap n at max_n (default = 5)
+  n_value <- min(round(avg_word_count), max_n)
+  
+  print(paste("Using n =", n_value))
+  
+  # Generate n-grams
+  bigrams <- data %>%
+    select(all_of(column), all_of(score_column)) %>%
+    drop_na(all_of(column), all_of(score_column)) %>%
+    filter(.data[[score_column]] > score_threshold) %>%
+    unnest_tokens(bigram, all_of(column), token = "ngrams", n = n_value) %>%
+    count(bigram, sort = TRUE)
+  
+  # Return formatted table
+  return(kable(bigrams, caption = paste("Most Common", n_value, "-grams in", column)))
+}
+
+average_word_count <- resume_df %>%
+  mutate(word_count = str_count(educational_institution_name, "\\S+") + 0) %>% # Count words in each row
+  summarise(avg_word_count = mean(word_count, na.rm = TRUE)) # Compute average word count
+
+
+# Example Usage:
+generate_bigrams(resume_df, "educational_institution_name", score_threshold = 0.8, n = 5)
+
+
+bigrams <- resume_df %>% 
+  select(educational_institution_name) %>%
+  drop_na(educational_institution_name) %>%
+  filter(resume_df$matched_score > 0.800) %>%
+  unnest_tokens(bigram, educational_institution_name, token = "ngrams", n = 5) %>%
+  count(bigram, sort = TRUE) # count word occurances and take average for ngram
+
+kable(bigrams, caption = "Most Common N-grams in Educational Institutions")
+
 

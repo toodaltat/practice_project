@@ -3,6 +3,7 @@
 ################################################################################
 
 library(tidyverse)
+library(tidytext)
 library(dplyr)
 library(re)
 library(knitr)
@@ -12,6 +13,7 @@ library(tm)
 library(stopwords)
 library(future)
 library(future.apply)
+library(Hmisc)
 
 current_dir <- getwd()
 plan(multicore, workers = availableCores() - 1)

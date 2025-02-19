@@ -111,3 +111,34 @@ perform_lda <- function(data, column_name, num_topics = 3, num_words = 5, seed =
 
 ################################################################################
 
+# input: void
+
+# intent: N-grams function
+
+# output: generate_bigrams
+
+
+generate_bigrams <- function(data_frame, column_name, score_threshold = 0.8, max_n = 5) {
+  
+  # Compute average word count per row
+  avg_word_count <- data_frame %>%
+    mutate(word_count = str_count(data_frame[[column_name]], "\\S+")) %>%
+    summarise(avg_words = mean(word_count, na.rm = TRUE)) %>%
+    pull(avg_words)
+  
+  # Cap n at max_n
+  n_value <- min(round(avg_word_count), max_n)
+  
+  print(paste("Using n =", n_value))
+  
+  # Generate n-grams
+  bigrams <- data_frame %>%
+    select(all_of(column_name), matched_score) %>% 
+    drop_na(all_of(column_name), matched_score) %>%  # Ensure no missing values
+    filter(matched_score > score_threshold) %>% 
+    unnest_tokens(bigram, all_of(column_name), token = "ngrams", n = n_value) %>%
+    count(bigram, sort = TRUE)
+  
+  # Return formatted table
+  return(kable(bigrams, caption = paste("Most Common", n_value, "-grams in", column_name)))
+}
