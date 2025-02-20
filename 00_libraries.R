@@ -14,6 +14,7 @@ library(stopwords)
 library(future)
 library(future.apply)
 library(Hmisc)
+library(stringr)
 
 current_dir <- getwd()
 plan(multicore, workers = availableCores() - 1)

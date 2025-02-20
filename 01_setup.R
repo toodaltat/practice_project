@@ -142,3 +142,25 @@ generate_bigrams <- function(data_frame, column_name, score_threshold = 0.8, max
   # Return formatted table
   return(kable(bigrams, caption = paste("Most Common", n_value, "-grams in", column_name)))
 }
+
+
+################################################################################
+# Gather occurrences
+################################################################################
+
+# input: resume_df
+
+# intent: Add occurrence of selected columns 
+
+# output: resume_df with occurrence column added
+
+occurrences_counter <- function(data, column_name, output_name) {
+  data %>%
+    mutate(cleaned_name = tolower(.data[[column_name]])) %>%
+    group_by(cleaned_name) %>%
+    mutate(output_name = n()) %>%
+    ungroup() %>%
+    arrange(desc(output_name)) %>%
+    select(-cleaned_name)
+}
+

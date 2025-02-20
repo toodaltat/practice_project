@@ -221,3 +221,16 @@ bigrams <- resume_df %>%
 kable(bigrams, caption = "Most Common N-grams in Educational Institutions")
 
 
+
+
+
+
+### TESTING CODE ###
+if (!exists("resume_df") || !is.data.frame(resume_df)) {
+  stop("resume_df is not defined or is not a dataframe.")
+}
+
+################################################################################
+
+
+
