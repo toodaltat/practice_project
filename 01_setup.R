@@ -23,14 +23,58 @@ resume_df <- resume_df %>% select(-address, -passing_years, -educational_results
 
 
 ################################################################################
-# Setting up tools
+# Gather occurrences
+################################################################################
+
+# input: resume_df
+
+# intent: Add occurrence of selected columns 
+
+# output: resume_df with occurrence column added
+
+occurrences_counter <- function(data, column_name, output_name) {
+  data %>%
+    mutate(cleaned_name = tolower(.data[[column_name]])) %>%
+    group_by(cleaned_name) %>%
+    mutate(!!output_name := n()) %>%
+    ungroup() %>%
+    arrange(desc(.data[[output_name]])) %>%
+    select(-cleaned_name)
+}
+
+
+################################################################################
+# Cleans a selected list of words from a column
+################################################################################
+
+# input:
+
+# intent:
+
+# output:
+
+clean_column <- function(data, column_name, word_removal) {
+  
+  # Construct regex pattern for removal and apply pattern using gsub
+  pattern <- paste0("\\b(", paste(word_removal, collapse = "|"), ")\\b")
+  data[[column_name]] <- gsub(pattern, "", data[[column_name]], ignore.case = TRUE)
+  
+  # Remove extra spaces
+  data[[column_name]] <- trimws(gsub("\\s+", " ", data[[column_name]]))
+  
+  return(data)
+}
+
+
+################################################################################
+# Setting up NLP tools
 ################################################################################
 
 # input: void
 
 # intent: build functions for cleaning
 
-# output: "preprocess_text" function
+# output: preprocess_text()
 
 
 # Preprocess Text function
@@ -61,50 +105,6 @@ preprocess_text <- function(text) {
   return(cleaned_text)
 }
 
-################################################################################
-
-# input: void
-
-# intent: LDA model function
-
-# output: perform_lda
-
-perform_lda <- function(data, column_name, num_topics = 3, num_words = 5, seed = 1234, workers = availableCores() - 1) {
-  
-  # Set up parallel processing
-  plan(multisession, workers = workers)
-  
-  # Convert text to a Document-Term Matrix (DTM)
-  docs <- Corpus(VectorSource(data[[column_name]]))
-  dtm <- DocumentTermMatrix(docs)
-  
-  # Remove empty rows
-  row_sums <- rowSums(as.matrix(dtm))
-  dtm <- dtm[row_sums > 0, ]
-  
-  # Debugging: Check if DTM has valid dimensions
-  print("Checking DTM dimensions:")
-  print(dim(dtm))
-  
-  # Fit LDA model in parallel
-  lda_model <- future({
-    topicmodels::LDA(dtm, k = num_topics, control = list(seed = seed))
-  })
-  lda_model <- value(lda_model)
-  
-  # Debugging: Check if lda_model is valid
-  print("Checking LDA model class:")
-  print(class(lda_model))
-  
-  # Extract beta matrix
-  beta <- broom::tidy(lda_model, matrix = "beta")
-  
-  # Reset future plan back to sequential (prevents issues with nested parallelism)
-  plan(sequential)
-  
-  return(beta)
-}
-
 
 ################################################################################
 
@@ -112,7 +112,7 @@ perform_lda <- function(data, column_name, num_topics = 3, num_words = 5, seed =
 
 # intent: N-grams function
 
-# output: generate_bigrams
+# output: generate_bigrams() which produces a kable table
 
 
 generate_bigrams <- function(data_frame, column_name, score_threshold = 0.8, max_n = 5) {
@@ -142,22 +142,64 @@ generate_bigrams <- function(data_frame, column_name, score_threshold = 0.8, max
 
 
 ################################################################################
-# Gather occurrences
-################################################################################
 
-# input: resume_df
+# input: void
 
-# intent: Add occurrence of selected columns 
+# intent: LDA model function which returns topic word probability
 
-# output: resume_df with occurrence column added
+# output: perform_lda(), beta:
 
-occurrences_counter <- function(data, column_name, output_name) {
-  data %>%
-    mutate(cleaned_name = tolower(.data[[column_name]])) %>%
-    group_by(cleaned_name) %>%
-    mutate(!!output_name := n()) %>%
-    ungroup() %>%
-    arrange(desc(.data[[output_name]])) %>%
-    select(-cleaned_name)
+perform_lda <- function(data, column_name, num_topics = 3, num_words = 5, seed = 1234, workers = availableCores() - 1) {
+  
+  # Set up parallel processing
+  plan(multisession, workers = workers)
+  
+  # Converts Rows into "documents", Columns into "terms" and Values become word frequencies
+  docs <- Corpus(VectorSource(data[[column_name]]))
+  dtm <- DocumentTermMatrix(docs)
+  
+  # Remove empty rows
+  row_sums <- rowSums(as.matrix(dtm))
+  dtm <- dtm[row_sums > 0, ]
+  
+  # Fit LDA model in parallel
+  lda_model <- future({
+    topicmodels::LDA(dtm, k = num_topics, control = list(seed = seed))
+  })
+  lda_model <- value(lda_model)
+
+  # Extract beta matrix
+  beta <- broom::tidy(lda_model, matrix = "beta")
+  
+  # Reset future plan back to sequential
+  plan(sequential)
+  
+  return(beta)
 }
 
+
+################################################################################
+
+# input:
+
+# intent:
+
+# output:
+
+
+# Define function for sentiment analysis
+perform_sentiment_analysis <- function(data, text_column) {
+  text_column <- ensym(text_column)
+  
+  sentiments <- data %>%
+    unnest_tokens(word, !!text_column) %>%
+    inner_join(get_sentiments("bing")) %>%
+    count(sentiment, sort = TRUE)
+  
+  # Plot sentiment distribution
+  ggplot(sentiments, aes(x = sentiment, y = n, fill = sentiment)) +
+    geom_col() +
+    theme_minimal()
+}
+
+################################################################################

@@ -17,6 +17,8 @@ library(future)
 library(future.apply)
 library(Hmisc)
 library(stringr)
+library(rlang)
+library(textdata)
 library(wordcloud)
 library(ggplot2)
 

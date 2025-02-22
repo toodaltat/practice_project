@@ -282,9 +282,10 @@ perform_lda <- function(data, column_name, num_topics = 3, num_words = 5, seed =
 
 
 library(textdata)
+colnames(resume_df)
 
-sentiments <- df %>%
-  unnest_tokens(word, text) %>%
+sentiments <- resume_df %>%
+  unnest_tokens(word, responsibilities) %>%
   inner_join(get_sentiments("bing")) %>%
   count(sentiment, sort = TRUE)
 
@@ -294,7 +295,7 @@ ggplot(sentiments, aes(x = sentiment, y = n, fill = sentiment)) +
 
 ####
 
-word_counts <- df %>%
+word_counts <- resume_df[["educational_institution_name"]] %>%
   unnest_tokens(word, text) %>%
   count(word, sort = TRUE)
 
@@ -346,4 +347,33 @@ beta %>%
   coord_flip()
 
 
+####### Graphing top companies
 
+ggplot(top_10_data, aes(x = reorder(professional_company_names, company_count), y = company_count)) +
+  geom_col(fill = "steelblue") +  
+  scale_y_log10() +  # Log scale for better visibility
+  labs(x = "Company Name", y = "Company Count (log scale)", title = "Top 10 Companies by Count") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+This will make differences more visible.
+
+Boxplot (to show distribution)
+
+r
+Copy
+Edit
+ggplot(unique_data, aes(y = company_count)) +
+  geom_boxplot() +
+  labs(y = "Company Count", title = "Distribution of Company Counts") +
+  theme_minimal()
+A boxplot will help visualize outliers and overall distribution.
+
+Histogram (to see frequency of counts)
+
+r
+Copy
+Edit
+ggplot(unique_data, aes(x = company_count)) +
+  geom_histogram(binwidth = 10, fill = "steelblue", color = "black") +
+  labs(x = "Company Count", y = "Frequency", title = "Distribution of Company Counts") +
+  theme_minimal()

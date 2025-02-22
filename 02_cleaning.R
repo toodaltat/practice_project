@@ -10,23 +10,25 @@ source("01_setup.R")
 
 # input: resume_df
 
-# intent: Fills in missing values and removes clutter from "educational_institution_name"
+# intent: Fills in missing values and removes clutter from certain columns
 
 # output: resume_df
 
-# Assuming that people who didn't mention spoken language are mono lingual English speakers. 
+# Assuming that people who didn't mention spoken language are mono lingual English speakers
 resume_df$languages[is.na(resume_df$languages)] <- "english"
 resume_df$proficiency_levels[is.na(resume_df$proficiency_levels)] <- "native"
 
+# Removes selected words from the column "educational_institution_name"
+word_removal <- c("none", "na", "NA", "hs", "iit", "isi", "k", "g", "r", "l", "p", "il", "ï", "kmpg", "n", "mras", "srmu", "m")
+resume_df <- clean_column(resume_df, "educational_institution_name", word_removal)
 
-# Setting pattern for cleaning
-institution_removal <- c("none", "na", "NA", "hs", "iit", "isi", "k", "g", "r", "l", "p", "il", "ï", "kmpg", "n", "mras", "srmu", "m")
-pattern <- paste0("\\b(", paste(institution_removal, collapse = "|"), ")\\b")
+# Removes selected words from the column "major_field_of_studies"
+word_removal <- c("none")
+resume_df <- clean_column(resume_df, "major_field_of_studies", word_removal)
 
-# Apply removal using gsub
-resume_df$educational_institution_name <- gsub(pattern, "", resume_df$educational_institution_name, ignore.case = TRUE)
-resume_df$educational_institution_name <- trimws(gsub("\\s+", " ", resume_df$educational_institution_name))
-
+# Removes selected words from the column "professional_company_names"
+word_removal <- c("none", "company", "name", "n")
+resume_df <- clean_column(resume_df, "professional_company_names", word_removal)
 
 ################################################################################
 # Pre_processing
