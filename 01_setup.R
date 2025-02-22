@@ -69,8 +69,6 @@ preprocess_text <- function(text) {
 
 # output: perform_lda
 
-
-# Function to perform LDA using parallel processing
 perform_lda <- function(data, column_name, num_topics = 3, num_words = 5, seed = 1234, workers = availableCores() - 1) {
   
   # Set up parallel processing
@@ -84,30 +82,29 @@ perform_lda <- function(data, column_name, num_topics = 3, num_words = 5, seed =
   row_sums <- rowSums(as.matrix(dtm))
   dtm <- dtm[row_sums > 0, ]
   
+  # Debugging: Check if DTM has valid dimensions
+  print("Checking DTM dimensions:")
+  print(dim(dtm))
+  
   # Fit LDA model in parallel
   lda_model <- future({
-    LDA(dtm, k = num_topics, control = list(seed = seed))
+    topicmodels::LDA(dtm, k = num_topics, control = list(seed = seed))
   })
   lda_model <- value(lda_model)
   
-  # Extract top words per topic
-  topic_terms <- terms(lda_model, num_words)
+  # Debugging: Check if lda_model is valid
+  print("Checking LDA model class:")
+  print(class(lda_model))
   
-  # Convert matrix output to a data frame
-  topic_df <- as.data.frame(topic_terms)
-  
-  # Rename columns for clarity
-  colnames(topic_df) <- paste("Topic", 1:num_topics)
-  
-  # Create a dynamic caption using the column name
-  caption_text <- paste("Top Words per Topic (LDA Model) for", column_name)
+  # Extract beta matrix
+  beta <- broom::tidy(lda_model, matrix = "beta")
   
   # Reset future plan back to sequential (prevents issues with nested parallelism)
   plan(sequential)
   
-  # Return a formatted table using knitr::kable()
-  return(kable(topic_df, caption = caption_text))
+  return(beta)
 }
+
 
 ################################################################################
 
@@ -158,9 +155,9 @@ occurrences_counter <- function(data, column_name, output_name) {
   data %>%
     mutate(cleaned_name = tolower(.data[[column_name]])) %>%
     group_by(cleaned_name) %>%
-    mutate(output_name = n()) %>%
+    mutate(!!output_name := n()) %>%
     ungroup() %>%
-    arrange(desc(output_name)) %>%
+    arrange(desc(.data[[output_name]])) %>%
     select(-cleaned_name)
 }
 

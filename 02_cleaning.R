@@ -53,10 +53,8 @@ resume_df[columns_to_process] <- future_lapply(resume_df[columns_to_process], fu
 # Calling occurrences_counter
 ################################################################################
 
-resume_df <- occurrences_counter(resume_df, "educational_institution_name", edu_count)
+resume_df <- occurrences_counter(resume_df, "educational_institution_name", output_name = "edu_count")
 
-resume_df <- occurrences_counter(resume_df, "professional_company_names", company_count)
+resume_df <- occurrences_counter(resume_df, "professional_company_names", output_name = "company_count")
 
 ################################################################################
-
-View(resume_df)

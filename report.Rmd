@@ -1,0 +1,55 @@
+---
+title: "report"
+author: "Ethan Milne 74465159"
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+source("03_modeling.R")
+```
+
+## Resume Analysis
+
+```{r}
+
+
+```
+
+## Including Plots
+
+You can also embed plots, for example:
+
+```{r, echo=FALSE}
+# Word Cloud for Topic 1
+lda_skills %>%
+  filter(topic == 1) %>%
+  with(wordcloud(term, beta, max.words = 50))
+
+# Teamlead
+
+```
+
+```{r, echo=FALSE}
+# Word Cloud for Topic 2
+lda_skills %>%
+  filter(topic == 2) %>%
+  with(wordcloud(term, beta, max.words = 50))
+
+# Financial
+
+```
+
+
+```{r, echo=FALSE}
+# Word Cloud for Topic 3
+lda_skills %>%
+  filter(topic == 3) %>%
+  with(wordcloud(term, beta, max.words = 50))
+
+# Techniqual engineer
+
+```
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.

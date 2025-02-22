@@ -2,12 +2,14 @@
 # Loading libraries
 ################################################################################
 
+library(broom)
 library(tidyverse)
 library(tidytext)
 library(dplyr)
 library(re)
 library(knitr)
 library(kableExtra)
+library(RColorBrewer)
 library(topicmodels)
 library(tm)
 library(stopwords)
@@ -15,6 +17,8 @@ library(future)
 library(future.apply)
 library(Hmisc)
 library(stringr)
+library(wordcloud)
+library(ggplot2)
 
 current_dir <- getwd()
 plan(multicore, workers = availableCores() - 1)

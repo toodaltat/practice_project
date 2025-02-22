@@ -234,3 +234,116 @@ if (!exists("resume_df") || !is.data.frame(resume_df)) {
 
 
 
+resume_df$professional_company_names <- gsub("\\bcompany name\\b", "", resume_df$professional_company_names, ignore.case = TRUE)
+
+unique(resume_df$professional_company_names)
+
+# Function to perform LDA using parallel processing
+perform_lda <- function(data, column_name, num_topics = 3, num_words = 5, seed = 1234, workers = availableCores() - 1) {
+  
+  # Set up parallel processing
+  plan(multisession, workers = workers)
+  
+  # Convert text to a Document-Term Matrix (DTM)
+  docs <- Corpus(VectorSource(data[[column_name]]))
+  dtm <- DocumentTermMatrix(docs)
+  
+  # Remove empty rows
+  row_sums <- rowSums(as.matrix(dtm))
+  dtm <- dtm[row_sums > 0, ]
+  
+  # Fit LDA model in parallel
+  lda_model <- future({
+    LDA(dtm, k = num_topics, control = list(seed = seed))
+  })
+  lda_model <- value(lda_model)
+  
+  beta <- broom::tidy(lda_model, matrix = "beta") 
+  
+  
+  # Extract top words per topic
+  #topic_terms <- terms(lda_model, num_words)
+  
+  # Convert matrix output to a data frame
+  #topic_df <- as.data.frame(topic_terms)
+  
+  # Rename columns for clarity
+  #colnames(topic_df) <- paste("Topic", 1:num_topics)
+  
+  # Create a dynamic caption using the column name
+  #caption_text <- paste("Top Words per Topic (LDA Model) for", column_name)
+  
+  # Reset future plan back to sequential (prevents issues with nested parallelism)
+  plan(sequential)
+  
+  return(lda_model)
+}
+
+
+
+library(textdata)
+
+sentiments <- df %>%
+  unnest_tokens(word, text) %>%
+  inner_join(get_sentiments("bing")) %>%
+  count(sentiment, sort = TRUE)
+
+ggplot(sentiments, aes(x = sentiment, y = n, fill = sentiment)) +
+  geom_col() +
+  theme_minimal()
+
+####
+
+word_counts <- df %>%
+  unnest_tokens(word, text) %>%
+  count(word, sort = TRUE)
+
+ggplot(word_counts %>% head(20), aes(x = reorder(word, n), y = n)) +
+  geom_col(fill = "darkred") +
+  coord_flip() +
+  labs(title = "Most Frequent Words", x = "Word", y = "Count")
+
+
+######
+
+library(igraph)
+library(ggraph)
+
+bigram_graph <- ngrams %>%
+  separate(bigram, into = c("word1", "word2"), sep = " ") %>%
+  filter(n > 5) %>%
+  graph_from_data_frame()
+
+ggraph(bigram_graph, layout = "fr") +
+  geom_edge_link(aes(edge_alpha = n), show.legend = FALSE) +
+  geom_node_point(color = "lightblue", size = 5) +
+  geom_node_text(aes(label = name), repel = TRUE) +
+  theme_void()
+
+###
+
+library(tidytext)
+library(dplyr)
+library(ggplot2)
+
+# Assuming df contains a column "text"
+ngrams <- df %>%
+  unnest_tokens(bigram, text, token = "ngrams", n = 2) %>%
+  count(bigram, sort = TRUE)
+
+ggplot(ngrams %>% head(20), aes(x = reorder(bigram, n), y = n)) +
+  geom_col(fill = "steelblue") +
+  coord_flip() +
+  labs(title = "Most Frequent Bigrams", x = "Bigram", y = "Count")
+
+
+beta %>%
+  group_by(topic) %>%
+  top_n(10, beta) %>%
+  ggplot(aes(x = reorder(term, beta), y = beta, fill = as.factor(topic))) +
+  geom_col(show.legend = FALSE) +
+  facet_wrap(~ topic, scales = "free") +
+  coord_flip()
+
+
+
