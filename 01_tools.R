@@ -31,6 +31,7 @@ occurrences_counter <- function(data, column_name, output_name) {
 #' @param column_name The name of the column to process.
 #' @param word_removal A vector of words to remove from the specified column.
 #' @return The modified data frame with specified words removed from `column_name`, and extra spaces trimmed.
+
 clean_column <- function(data, column_name, word_removal) {
   data[[column_name]] <- str_remove_all(data[[column_name]], regex(paste(word_removal, collapse = "|"), ignore_case = TRUE))
   
@@ -51,23 +52,17 @@ stopwords_english <- stopwords("en")
 
 #' @param text A character string containing text to preprocess.
 #' @return A cleaned character string with punctuation removed, stopwords filtered out, and normalized whitespace.
+
 preprocess_text <- function(text) {
-  # Check if text is NA or empty
   if (is.na(text) | text == "") return("")
   
-  # Convert to lowercase
+  # Convert to lowercase and replace punctuation with spaces
   clean_text <- tolower(text)
-  
-  # Replace punctuation with spaces using gsub
   clean_text <- gsub("[[:punct:]]+", " ", clean_text)
-  
-  # Replace single hyphens with spaces
   clean_text <- gsub("\\s-\\s", " ", clean_text)
   
   # Split by whitespace and remove stopwords
   tokens <- unlist(strsplit(clean_text, "\\s+"))
-  
-  # Remove stopwords
   processed_tokens <- tokens[!(tokens %in% stopwords_english)]
   
   # Return a cleaned string joined by spaces
@@ -84,6 +79,7 @@ preprocess_text <- function(text) {
 #' @param score_threshold The minimum score a row must have to be included in bigram extraction.
 #' @param max_n The maximum number of words to consider per n-gram.
 #' @return A kable-formatted table displaying the most common bigrams.
+
 generate_bigrams <- function(data, column_name, score_threshold = 0.8, max_n = 5) {
   
   # Compute average word count per row
@@ -118,12 +114,11 @@ generate_bigrams <- function(data, column_name, score_threshold = 0.8, max_n = 5
 #' @param seed A random seed for reproducibility.
 #' @param workers The number of CPU cores to use for parallel processing.
 #' @return A tibble containing topic-word probabilities from the LDA model.
+
 perform_lda <- function(data, column_name, num_topics = 3, num_words = 5, seed = 1234, workers = availableCores() - 1) {
-  
-  # Set up parallel processing
   plan(multisession, workers = workers)
   
-  # Convert text column into a corpus and then into a document-term matrix (DTM),
+  # Convert text column into a corpus and then into a document-term matrix,
   # where rows represent documents, columns represent terms, and values are term frequencies.
   docs <- Corpus(VectorSource(data[[column_name]]))
   dtm <- DocumentTermMatrix(docs)
@@ -153,6 +148,7 @@ perform_lda <- function(data, column_name, num_topics = 3, num_words = 5, seed =
 #' @param data A data frame containing the text column to be analyzed.
 #' @param text_column The name of the column containing text data.
 #' @return A ggplot object visualizing the distribution of positive and negative sentiment based on the "bing" lexicon.
+
 perform_sentiment_analysis <- function(data, text_column) {
   text_column <- ensym(text_column)
   

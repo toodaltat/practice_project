@@ -1,27 +1,13 @@
 ################################################################################
 # Loading libraries
 ################################################################################
+packages <- c(
+  "broom", "tidyverse", "tidytext", "dplyr", "re", "knitr", "kableExtra",
+  "RColorBrewer", "topicmodels", "tm", "stopwords", "future", "future.apply",
+  "Hmisc", "stringr", "rlang", "textdata", "wordcloud", "ggplot2", "patchwork"
+)
 
-library(broom)
-library(tidyverse)
-library(tidytext)
-library(dplyr)
-library(re)
-library(knitr)
-library(kableExtra)
-library(RColorBrewer)
-library(topicmodels)
-library(tm)
-library(stopwords)
-library(future)
-library(future.apply)
-library(Hmisc)
-library(stringr)
-library(rlang)
-library(textdata)
-library(wordcloud)
-library(ggplot2)
-library(patchwork)
+lapply(packages, library, character.only = TRUE)
 
 current_dir <- getwd()
 plan(multicore, workers = availableCores() - 1)

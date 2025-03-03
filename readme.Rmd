@@ -2,15 +2,15 @@
 title: "readme"
 author: "Ethan Milne 74465159"
 date: "`r Sys.Date()`"
-output: html_document
+output: github_document
 ---
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```
-#   Resume Data Processing and NLP Analysis
+# Resume Data Processing and NLP Analysis
 
-##    Overview
+## Overview
 This project focuses on processing and analyzing resume data using NLP. The analysis includes data cleaning, text preprocessing, topic modeling, sentiment analysis and n-gram extraction.
 
 ## Features
@@ -20,8 +20,8 @@ This project focuses on processing and analyzing resume data using NLP. The anal
 - **Topic Modeling (LDA)**: Extracts key topics from resume text data.
 - **Sentiment Analysis**: Analyzes sentiment polarity using the Bing lexicon.
 
-##    Installation
-###   Dependencies
+## Installation
+### Dependencies
 Running this version of R.
   R version 4.4.0 (2024-04-24 ucrt) -- "Puppy Cup"
 
