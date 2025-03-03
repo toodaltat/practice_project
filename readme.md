@@ -22,8 +22,7 @@ sentiment analysis and n-gram extraction.
 
 ### Dependencies
 
-Running this version of R. R version 4.4.0 (2024-04-24 ucrt) – “Puppy
-Cup”
+R version 4.4.0 (2024-04-24 ucrt) – “Puppy Cup”
 
 Ensure you have the following R packages installed:
 
@@ -110,6 +109,7 @@ Analyzes sentiment distribution using the Bing lexicon.
 ## Future Enhancements
 
 -   Improve recognition to classify skills and job titles and degree
-    names. Either look for pattern or load dictionary to work against.
+    names. == Either look for pattern or load dictionary to work against.
 -   Research and then implement more robust text classification models.
-    Identify what makes a text classification model robust.
+    == Identify what makes a text classification model robust.
+-   Have a better grip on cleaning text. == Take snippets of text and test processes on them to find faults. 

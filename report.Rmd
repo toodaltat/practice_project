@@ -14,8 +14,6 @@ source("03_modeling.R")
 
 ## Including Plots
 
-You can also embed plots, for example:
-
 ```{r, echo=FALSE}
 
 plot_skills <- lda_skills %>%
