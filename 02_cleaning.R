@@ -2,7 +2,26 @@
 # Loading necessary scripts
 ################################################################################
 
-source("01_setup.R")
+source("01_tools.R")
+
+################################################################################
+# Setting up dataframe
+################################################################################
+
+# input: resume_df
+
+# intent: dropping unwanted columns
+
+# output: resume_df
+
+
+resume_df <- resume_df %>% select(-address, -passing_years, -educational_results,
+                                  -result_types, -company_urls, -start_dates, -end_dates,
+                                  -locations, -extra_curricular_activity_types, -extra_curricular_organization_names,
+                                  -extra_curricular_organization_links, -role_positions, -certification_providers, -certification_skills,
+                                  -online_links, -issue_dates, -expiry_dates, -age_requirement)
+
+
 
 ################################################################################
 # Cleaning
@@ -30,6 +49,10 @@ resume_df <- clean_column(resume_df, "major_field_of_studies", word_removal)
 word_removal <- c("none", "company", "name", "n")
 resume_df <- clean_column(resume_df, "professional_company_names", word_removal)
 
+# Removes selected words from the column "skills_required"
+word_removal <- c("skills", "skill")
+resume_df <- clean_column(resume_df, "skills_required", word_removal)
+
 ################################################################################
 # Pre_processing
 ################################################################################
@@ -55,8 +78,8 @@ resume_df[columns_to_process] <- future_lapply(resume_df[columns_to_process], fu
 # Calling occurrences_counter
 ################################################################################
 
-resume_df <- occurrences_counter(resume_df, "educational_institution_name", output_name = "edu_count")
+#resume_df <- occurrences_counter(resume_df, "educational_institution_name", output_name = "edu_count")
 
-resume_df <- occurrences_counter(resume_df, "professional_company_names", output_name = "company_count")
+#resume_df <- occurrences_counter(resume_df, "professional_company_names", output_name = "company_count")
 
 ################################################################################

@@ -8,51 +8,94 @@ output: html_document
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```
-# NLP portfolio project
+# Resume Data Processing and NLP Analysis
 
-## The intention of this project is to inspect around 10,000 resumes for correlations and discover findings.
+## Overview
+This project focuses on processing and analyzing resume data using NLP. The analysis includes data cleaning, text preprocessing, topic modeling, sentiment analysis and n-gram extraction.
 
-### Intro
-Processing text
+## Features
+- **Data Cleaning**: Removes unnecessary words, fills missing values, and processes text columns.
+- **Text Preprocessing**: Converts text to lowercase, removes punctuation, and filters stopwords.
+- **Bigram Extraction**: Identifies frequently occurring word pairs in resume descriptions.
+- **Topic Modeling (LDA)**: Extracts key topics from resume text data.
+- **Sentiment Analysis**: Analyzes sentiment polarity using the Bing lexicon.
 
-### What this script will you to achieve
+## Installation
+### Dependencies
+Ensure you have the following R packages installed:
+```r
+install.packages(c("broom", "tidyverse", "tidytext", "dplyr", "re", "knitr",
+                   "kableExtra", "RColorBrewer", "topicmodels", "tm", "stopwords",
+                   "future", "future.apply", "Hmisc", "stringr", "rlang", "textdata",
+                   "wordcloud", "ggplot2", "patchwork"))
+```
 
-Gather insight into resumes
+## Setup
+1. Clone the repository and set your working directory:
+   ```r
+   current_dir <- getwd()
+   ```
+2. Load the dataset:
+   ```r
+   resume_file <- file.path(current_dir, 'data/resume_data.csv')
+   resume_df <- read_csv(resume_file)
+   ```
+3. Load necessary scripts:
+   ```r
+   source("00_libraries.R")
+   source("01_tools.R")
+   ```
 
-### Prerequisites:
-UP TO DATE
+## Functions
+### 1. `occurrences_counter()`
+Counts occurrences of unique values in a specified column.
+```r
+data %>% occurrences_counter("column_name", "output_name")
+```
 
+### 2. `clean_column()`
+Removes specific words from a text column.
+```r
+data %>% clean_column("column_name", c("word1", "word2"))
+```
 
-### Folder format:
-Further down the number line more graphing.
+### 3. `preprocess_text()`
+Processes text by removing punctuation, converting to lowercase, and filtering stopwords.
+```r
+preprocess_text("sample text here")
+```
 
+### 4. `generate_bigrams()`
+Extracts common n-grams from a text column.
+```r
+data %>% generate_bigrams("column_name", score_threshold = 0.8, max_n = 5)
+```
 
-### Instruction
-Read carefully and have knowledge on the process
+### 5. `perform_lda()`
+Performs topic modeling using LDA.
+```r
+data %>% perform_lda("column_name", num_topics = 3, num_words = 5)
+```
 
-#### 00_libraries.R
-	
-	This inital file sets the enviroment with packages that range from helping with word cleaning, graph making and reaches into NLP with topic modeling and stopwords. Incorperating future brings in the ability for multipal processes to be active in computation.
+### 6. `perform_sentiment_analysis()`
+Analyzes sentiment distribution using the Bing lexicon.
+```r
+data %>% perform_sentiment_analysis("column_name")
+```
 
-	The data folder is also read here.
+## Data Processing
+### Cleaning
+- Fills missing language fields with "English".
+- Removes unwanted words from specific text columns.
 
-#### 01_setup.R
+### Preprocessing
+- Applies `preprocess_text()` to clean text columns.
+- Uses `future_lapply()` for efficient parallel processing.
 
-	Here cutting the dataframe down to enable analysis by chunking.
+## Output
+- Cleaned resume dataset ready for NLP analysis.
+- Visualizations for sentiment analysis and topic modeling.
 
-	Creating a function to clean the text data, perform lda analysis and N-grams.
-	  perform_lda()
-	  generate_ngrams()
-
-#### 02_cleaning.R
-
-	Filling in missing data points around mono lingual english speakers who did not feel it neccasary to state there languages spoken and proficenicy so ive added english and native where there was NA.
-
-	Applying the text cleaning with use of the future library for multipal core activation.
-	
-	Count occurances and adds them to the end of the column.
-
-#### 03_lda modeling.R
-
-	Incorperating the NLP libraries to get lda models to view the top 5 responsibilites and major fields of studie across 3 topic groups.
-
+## Future Enhancements
+- Improve Named Entity Recognition (NER) to classify skills and job titles.
+- Implement more robust text classification models.

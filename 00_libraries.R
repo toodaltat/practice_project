@@ -21,6 +21,7 @@ library(rlang)
 library(textdata)
 library(wordcloud)
 library(ggplot2)
+library(patchwork)
 
 current_dir <- getwd()
 plan(multicore, workers = availableCores() - 1)

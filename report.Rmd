@@ -18,71 +18,102 @@ You can also embed plots, for example:
 
 ```{r, echo=FALSE}
 
-lda_skills %>%
+plot_skills <- lda_skills %>%
   group_by(topic) %>%
   top_n(10, beta) %>%
   ggplot(aes(x = reorder(term, beta), y = beta, fill = as.factor(topic))) +
   geom_col(show.legend = FALSE) +
   facet_wrap(~ topic, scales = "free") +
-  coord_flip()
+  coord_flip() +
+  ggtitle("Skills")
 
-```
-
-
-```{r}
-lda_responsibilites %>%
+plot_skills_required <- lda_skills_required %>%
   group_by(topic) %>%
   top_n(10, beta) %>%
   ggplot(aes(x = reorder(term, beta), y = beta, fill = as.factor(topic))) +
   geom_col(show.legend = FALSE) +
   facet_wrap(~ topic, scales = "free") +
-  coord_flip()
-
-```
-
-
-```{r}
-lda_field_studied %>%
-  group_by(topic) %>%
-  top_n(10, beta) %>%
-  ggplot(aes(x = reorder(term, beta), y = beta, fill = as.factor(topic))) +
-  geom_col(show.legend = FALSE) +
-  facet_wrap(~ topic, scales = "free") +
-  coord_flip()
-
-```
-
-```{r}
-lda_career %>%
-  group_by(topic) %>%
-  top_n(10, beta) %>%
-  ggplot(aes(x = reorder(term, beta), y = beta, fill = as.factor(topic))) +
-  geom_col(show.legend = FALSE) +
-  facet_wrap(~ topic, scales = "free") +
-  coord_flip()
+  coord_flip() +
+  ggtitle("Skills Required")
 
 ```
 
 
 ```{r}
 
-# Select unique company names and counts
-unique_data <- resume_df %>%
-  distinct(professional_company_names, company_count) %>% 
-  drop_na()
+plot_field_studied <- lda_field_studied %>%
+  group_by(topic) %>%
+  top_n(10, beta) %>%
+  ggplot(aes(x = reorder(term, beta), y = beta, fill = as.factor(topic))) +
+  geom_col(show.legend = FALSE) +
+  facet_wrap(~ topic, scales = "free") +
+  coord_flip() +
+  ggtitle("Field Studied")
 
-# Select top 10 rows with highest company_count
-top_10_data <- unique_data %>%
-  slice_max(order_by = company_count, n = 10)
+plot_career <- lda_career %>%
+  group_by(topic) %>%
+  top_n(10, beta) %>%
+  ggplot(aes(x = reorder(term, beta), y = beta, fill = as.factor(topic))) +
+  geom_col(show.legend = FALSE) +
+  facet_wrap(~ topic, scales = "free") +
+  coord_flip() +
+  ggtitle("Career")
 
-# Create a bar chart
-ggplot(top_10_data, aes(x = reorder(professional_company_names, company_count), y = company_count)) +
-  geom_col(fill = "steelblue") +  
-  labs(x = "Company Name", y = "Company Count", title = "Top 10 Companies by Count") +
-  theme_minimal() +
-  theme(axis.text.x = element_text(angle = 45, hjust = 1))  # Rotate x-axis labels for readability
+```
 
 
-summary(top_10_data)
+```{r}
+
+plot_responsibilites <- lda_responsibilites %>%
+  group_by(topic) %>%
+  top_n(10, beta) %>%
+  ggplot(aes(x = reorder(term, beta), y = beta, fill = as.factor(topic))) +
+  geom_col(show.legend = FALSE) +
+  facet_wrap(~ topic, scales = "free") +
+  coord_flip() +
+  ggtitle("Responsibilities")
+
+```
+
+```{r}
+
+# Combine plots into a grid layout
+combined_plot <- (plot_skills | plot_skills_required)
+
+# Display the combined plot
+combined_plot
+
+```
+
+
+```{r}
+
+```
+
+
+```{r}
+
+
+
+
+
+
+
+
+
+
+```
+
+
+```{r}
+sentiment_responsibilites
+
+```
+
+
+```{r}
+
+View(resume_df)
+
 
 ```
