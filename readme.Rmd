@@ -31,16 +31,19 @@ install.packages(c("broom", "tidyverse", "tidytext", "dplyr", "re", "knitr",
 ```
 
 ## Setup
-1. Clone the repository and set your working directory:
+1. Pull the data set from Kaggle:
+https://www.kaggle.com/datasets/saugataroyarghya/resume-dataset
+
+2. Clone the repository and set your working directory:
    ```r
    current_dir <- getwd()
    ```
-2. Load the dataset:
+3. Load the dataset:
    ```r
    resume_file <- file.path(current_dir, 'data/resume_data.csv')
    resume_df <- read_csv(resume_file)
    ```
-3. Load necessary scripts:
+4. Load necessary scripts:
    ```r
    source("00_libraries.R")
    source("01_tools.R")
@@ -97,5 +100,6 @@ data %>% perform_sentiment_analysis("column_name")
 - Visualizations for sentiment analysis and topic modeling.
 
 ## Future Enhancements
-- Improve Named Entity Recognition (NER) to classify skills and job titles.
-- Implement more robust text classification models.
+- Improve recognition to classify skills and job titles.
+- Research and then implement more robust text classification models.
+- Identify what makes a text classification model robust.
