@@ -8,9 +8,9 @@ output: html_document
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```
-# Resume Data Processing and NLP Analysis
+#   Resume Data Processing and NLP Analysis
 
-## Overview
+##    Overview
 This project focuses on processing and analyzing resume data using NLP. The analysis includes data cleaning, text preprocessing, topic modeling, sentiment analysis and n-gram extraction.
 
 ## Features
@@ -20,8 +20,11 @@ This project focuses on processing and analyzing resume data using NLP. The anal
 - **Topic Modeling (LDA)**: Extracts key topics from resume text data.
 - **Sentiment Analysis**: Analyzes sentiment polarity using the Bing lexicon.
 
-## Installation
-### Dependencies
+##    Installation
+###   Dependencies
+Running this version of R.
+  R version 4.4.0 (2024-04-24 ucrt) -- "Puppy Cup"
+
 Ensure you have the following R packages installed:
 ```r
 install.packages(c("broom", "tidyverse", "tidytext", "dplyr", "re", "knitr",
@@ -96,10 +99,11 @@ data %>% perform_sentiment_analysis("column_name")
 - Uses `future_lapply()` for efficient parallel processing.
 
 ## Output
-- Cleaned resume dataset ready for NLP analysis.
+- Cleaned resume dataset.
 - Visualizations for sentiment analysis and topic modeling.
 
 ## Future Enhancements
-- Improve recognition to classify skills and job titles.
+- Improve recognition to classify skills and job titles and degree names.
+    Either look for pattern or load dictionary to work against.
 - Research and then implement more robust text classification models.
-- Identify what makes a text classification model robust.
+    Identify what makes a text classification model robust.
