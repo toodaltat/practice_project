@@ -13,11 +13,11 @@ current_dir <- getwd()
 plan(multicore, workers = availableCores() - 1)
 
 ################################################################################
-# Loading data set
+# Loading data set and setting save location
 ################################################################################
+plot_folder_path <- paste0(current_dir, "/data/images/")
 
 resume_file <- file.path(current_dir, 'data/resume_data.csv')
-
 resume_df <- read_csv(resume_file)
 
 ################################################################################

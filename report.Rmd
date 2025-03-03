@@ -7,7 +7,7 @@ output: html_document
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
-source("03_modeling.R")
+source("04_ploting.R")
 ```
 
 ## Resume Analysis
@@ -16,102 +16,7 @@ source("03_modeling.R")
 
 ```{r, echo=FALSE}
 
-plot_skills <- lda_skills %>%
-  group_by(topic) %>%
-  top_n(10, beta) %>%
-  ggplot(aes(x = reorder(term, beta), y = beta, fill = as.factor(topic))) +
-  geom_col(show.legend = FALSE) +
-  facet_wrap(~ topic, scales = "free") +
-  coord_flip() +
-  ggtitle("Skills")
 
-plot_skills_required <- lda_skills_required %>%
-  group_by(topic) %>%
-  top_n(10, beta) %>%
-  ggplot(aes(x = reorder(term, beta), y = beta, fill = as.factor(topic))) +
-  geom_col(show.legend = FALSE) +
-  facet_wrap(~ topic, scales = "free") +
-  coord_flip() +
-  ggtitle("Skills Required")
-
-```
-
-
-```{r}
-
-plot_field_studied <- lda_field_studied %>%
-  group_by(topic) %>%
-  top_n(10, beta) %>%
-  ggplot(aes(x = reorder(term, beta), y = beta, fill = as.factor(topic))) +
-  geom_col(show.legend = FALSE) +
-  facet_wrap(~ topic, scales = "free") +
-  coord_flip() +
-  ggtitle("Field Studied")
-
-plot_career <- lda_career %>%
-  group_by(topic) %>%
-  top_n(10, beta) %>%
-  ggplot(aes(x = reorder(term, beta), y = beta, fill = as.factor(topic))) +
-  geom_col(show.legend = FALSE) +
-  facet_wrap(~ topic, scales = "free") +
-  coord_flip() +
-  ggtitle("Career")
-
-```
-
-
-```{r}
-
-plot_responsibilites <- lda_responsibilites %>%
-  group_by(topic) %>%
-  top_n(10, beta) %>%
-  ggplot(aes(x = reorder(term, beta), y = beta, fill = as.factor(topic))) +
-  geom_col(show.legend = FALSE) +
-  facet_wrap(~ topic, scales = "free") +
-  coord_flip() +
-  ggtitle("Responsibilities")
-
-```
-
-```{r}
-
-# Combine plots into a grid layout
-combined_plot <- (plot_skills | plot_skills_required)
-
-# Display the combined plot
-combined_plot
-
-```
-
-
-```{r}
-
-```
-
-
-```{r}
-
-
-
-
-
-
-
-
-
-
-```
-
-
-```{r}
 sentiment_responsibilites
-
-```
-
-
-```{r}
-
-View(resume_df)
-
 
 ```
