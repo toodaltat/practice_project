@@ -112,4 +112,6 @@ Analyzes sentiment distribution using the Bing lexicon.
     names. == Either look for pattern or load dictionary to work against.
 -   Research and then implement more robust text classification models.
     == Identify what makes a text classification model robust.
--   Have a better grip on cleaning text. == Take snippets of text and test processes on them to find faults. 
+-   Have a better grip on cleaning text. == Take snippets of text and test processes on them to find faults.
+
+-   Don't just 'git add .' as it makes my 'git commit -m ""' less clear.
