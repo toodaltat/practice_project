@@ -108,10 +108,27 @@ Analyzes sentiment distribution using the Bing lexicon.
 
 ## Future Enhancements
 
--   Improve recognition to classify skills and job titles and degree
-    names. == Either look for pattern or load dictionary to work against.
+-   Have a clear goal of "who" I am doing an analysis for. This will aid in
+    directing me in what comparisons ill be looking for. == What part of the community
+    is the dataset pulled from, who would be interested in it. Narrow down the scope.
+
+-   Improve item recognition to classify skills, job titles and degree
+    names. == Either look for a pattern or load a dictionary to work against.
+    
 -   Research and then implement more robust text classification models.
     == Identify what makes a text classification model robust.
--   Have a better grip on cleaning text. == Take snippets of text and test processes on them to find faults.
+    
+-   Have a better grip on cleaning text methods. == Take snippets of text and test processes on them to find          faults.
 
--   Don't just 'git add .' as it makes my 'git commit -m ""' less clear.
+-   Don't just 'git add .' as it makes my 'git commit -m "****"' less clear.
+
+### For this project
+
+-   Language department, look to see if people that aren't monolingual have higher
+    'match score'. Is there a common theme with jobs that non-monolingual go for.
+    
+-   Education department, check for what majors look for what companies to set up a
+    bridging program. Skills required to enter job market, this web page goes through
+    a sound step by step process; https://www.kaggle.com/code/sonawanelalitsunil/skills-required-to-get-job-in-market
+
+-   Run a TF-IDF on rows to look for unique words.
