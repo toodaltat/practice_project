@@ -15,8 +15,28 @@ source("04_ploting.R")
 ## Including Plots
 
 ```{r, echo=FALSE}
-combined_plot
 
 sentiment_responsibilites
+
+```
+
+
+```{r}
+
+language_counts
+
+```
+
+
+```{r}
+
+edu_count
+
+```
+
+
+```{r}
+
+pro_comp_names
 
 ```
