@@ -1,25 +1,6 @@
 ################################################################################
 source("00_libraries.R")
 ################################################################################
-# Gather occurrences
-################################################################################
-
-#' @param data A data frame containing the column to analyze.
-#' @param column_name The name of the column for which occurrences should be counted.
-#' @param output_name The name of the new column that will store the occurrence count.
-#' @return The original data frame with an additional column containing the count of occurrences per unique value in `column_name`.
-occurrences_counter <- function(data, column_name, output_name) {
-  data %>%
-    mutate(cleaned_name = tolower(.data[[column_name]])) %>%
-    group_by(cleaned_name) %>%
-    mutate(!!output_name := n()) %>%
-    ungroup() %>%
-    arrange(desc(.data[[output_name]])) %>%
-    select(-cleaned_name)
-}
-
-
-################################################################################
 # Cleans a selected list of words from a column
 ################################################################################
 
@@ -70,34 +51,20 @@ preprocess_text <- function(text) {
 
 ################################################################################
 
-#' @param data A data frame containing the text column to analyze.
-#' @param column_name The name of the text column from which bigrams will be generated.
-#' @param score_threshold The minimum score a row must have to be included in bigram extraction.
-#' @param max_n The maximum number of words to consider per n-gram.
-#' @return A kable-formatted table displaying the most common bigrams.
-
-generate_bigrams <- function(data, column_name, score_threshold = 0.8, max_n = 5) {
-  
-  # Compute average word count per row
-  avg_word_count <- data %>%
-    mutate(word_count = str_count(data[[column_name]], "\\S+")) %>%
-    summarise(avg_words = mean(word_count, na.rm = TRUE)) %>%
-    pull(avg_words)
-
-  n_value <- min(round(avg_word_count), max_n)
-  
-  print(paste("Using n =", n_value))
-  
-  # Generate n-grams
-  bigrams <- data %>%
-    select(all_of(column_name), matched_score) %>% 
-    drop_na(all_of(column_name), matched_score) %>%  # Ensure no missing values
-    filter(matched_score > score_threshold) %>% 
-    unnest_tokens(bigram, all_of(column_name), token = "ngrams", n = n_value) %>%
-    count(bigram, sort = TRUE)
-  
-  # Return formatted table
-  return(kable(bigrams, caption = paste("Most Common", n_value, "-grams in", column_name)))
+#' @param data A dataframe containing the column to analyze.
+#' @id_col Unique id each row has.
+#' @text_col The column selected for operation.
+#' @return ##
+compute_tfidf <- function(data, id_col, text_col) {
+  data %>%
+    mutate(id = row_number()) %>%
+    unnest_tokens(word, !!sym(text_col)) %>%
+    count(!!sym(id_col), word, sort = TRUE) %>%
+    bind_tf_idf(word, !!sym(id_col), n) %>%
+    distinct(word, .keep_all = TRUE) %>%
+    arrange(desc(tf_idf)) %>%
+    head(10) %>%
+    kable()
 }
 
 
@@ -140,6 +107,9 @@ perform_lda <- function(data, column_name, num_topics = 3, num_words = 5, seed =
 
 
 ################################################################################
+############################HAZARD##############################################
+#########################!!OUT OF USE!!#########################################
+
 
 #' @param data A data frame containing the text column to be analyzed.
 #' @param text_column The name of the column containing text data.
@@ -158,5 +128,36 @@ perform_sentiment_analysis <- function(data, text_column) {
     geom_col() +
     theme_minimal()
 }
+
+#' @param data A data frame containing the text column to analyze.
+#' @param column_name The name of the text column from which bigrams will be generated.
+#' @param score_threshold The minimum score a row must have to be included in bigram extraction.
+#' @param max_n The maximum number of words to consider per n-gram.
+#' @return A kable-formatted table displaying the most common bigrams.
+
+generate_bigrams <- function(data, column_name, score_threshold = 0.8, max_n = 5) {
+  
+  # Compute average word count per row
+  avg_word_count <- data %>%
+    mutate(word_count = str_count(data[[column_name]], "\\S+")) %>%
+    summarise(avg_words = mean(word_count, na.rm = TRUE)) %>%
+    pull(avg_words)
+  
+  n_value <- min(round(avg_word_count), max_n)
+  
+  print(paste("Using n =", n_value))
+  
+  # Generate n-grams
+  bigrams <- data %>%
+    select(all_of(column_name), matched_score) %>% 
+    drop_na(all_of(column_name), matched_score) %>%  # Ensure no missing values
+    filter(matched_score > score_threshold) %>% 
+    unnest_tokens(bigram, all_of(column_name), token = "ngrams", n = n_value) %>%
+    count(bigram, sort = TRUE)
+  
+  # Return formatted table
+  return(kable(bigrams, caption = paste("Most Common", n_value, "-grams in", column_name)))
+}
+
 
 ################################################################################

@@ -15,28 +15,21 @@ source("04_ploting.R")
 ## Including Plots
 
 ```{r, echo=FALSE}
+tfidf_skills
+```
 
-sentiment_responsibilites
 
+```{r}
+tfidf_major_field
+```
+
+
+```{r}
+tfidf_related_skills
 ```
 
 
 ```{r}
 
-language_counts
-
-```
-
-
-```{r}
-
-edu_count
-
-```
-
-
-```{r}
-
-pro_comp_names
 
 ```
