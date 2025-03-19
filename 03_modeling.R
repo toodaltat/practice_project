@@ -18,8 +18,11 @@ source("02_cleaning.R")
 # Producing TF-IDF tables.
 ################################################################################
 
-tfidf_skills <- compute_tfidf(resume_df, "id", "skills")
+tfidf_skills <- compute_tf_idf(resume_df, "id", "skills")
 tfidf_skills
+
+
+print(tf_idf_summary)
 
 #tfidf_major_field <- compute_tfidf(resume_df, "id", "major_field_of_studies")
 #tfidf_major_field

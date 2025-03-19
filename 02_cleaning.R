@@ -29,6 +29,12 @@ resume_df <- resume_df %>% select(-address, -passing_years, -educational_results
 
 # output: resume_df
 
+
+#Adding id column
+resume_df <- resume_df %>%
+  mutate(id = row_number()) %>%  # Create a sequential ID column
+  relocate(id)
+
 # Assuming that people who didn't mention spoken language are mono lingual English speakers
 resume_df$languages[is.na(resume_df$languages)] <- "english"
 resume_df$proficiency_levels[is.na(resume_df$proficiency_levels)] <- "native"

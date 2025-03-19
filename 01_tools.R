@@ -54,30 +54,26 @@ preprocess_text <- function(text) {
 #' @param data A dataframe containing the column to analyze.
 #' @id_col Unique id each row has.
 #' @text_col The column selected for operation.
-#' @return ##
-compute_tfidf <- function(data, id_col, text_col) {
-  data %>%
-    unnest_tokens(word, !!sym(text_col)) %>%
-    count(!!sym(id_col), word, sort = TRUE) %>%
-    bind_tf_idf(word, !!sym(id_col), n) %>%
-    group_by(word) %>% 
-    summarize(
-      avg_tf = mean(tf), 
-      avg_idf = mean(idf), 
-      avg_tf_idf = mean(tf_idf),
-      total_count = sum(n)
+#' @return TF-IDF tibble table.
+
+compute_tf_idf_summary <- function(data, id_col, text_col) {
+  id_col <- ensym(id_col)
+  text_col <- ensym(text_col)
+  
+  tidy_data <- data %>%
+    unnest_tokens(word, {{text_col}}) %>%
+    count(!!id_col, word, sort = TRUE) %>%
+    bind_tf_idf(word, {{id_col}}, n) %>%
+    group_by(word) %>%
+    summarise(
+      total_count = sum(n),
+      avg_tf = mean(tf),
+      avg_idf = mean(idf),
+      avg_tf_idf = mean(tf_idf)
     ) %>%
-    arrange(desc(avg_tf_idf)) %>%
-    head(200) %>%
-    kable(
-      format = "html",
-      digits = 5,
-      col.names = c("Word", "Avg TF", "Avg IDF", "Avg TF-IDF", "Total Count")
-    ) %>%
-    kable_styling(
-      full_width = FALSE,
-      bootstrap_options = c("striped", "hover", "condensed", "responsive")
-    )
+    arrange(desc(avg_tf_idf))
+  
+  return(tidy_data)
 }
 
 
@@ -120,9 +116,15 @@ perform_lda <- function(data, column_name, num_topics = 3, num_words = 5, seed =
 
 
 ################################################################################
+# Kable table
+################################################################################
+
+
+
+
+################################################################################
 ############################HAZARD##############################################
 #########################!!OUT OF USE!!#########################################
-
 
 #' @param data A data frame containing the text column to be analyzed.
 #' @param text_column The name of the column containing text data.
@@ -173,4 +175,3 @@ generate_bigrams <- function(data, column_name, score_threshold = 0.8, max_n = 5
 }
 
 
-################################################################################
