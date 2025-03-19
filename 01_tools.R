@@ -57,14 +57,27 @@ preprocess_text <- function(text) {
 #' @return ##
 compute_tfidf <- function(data, id_col, text_col) {
   data %>%
-    mutate(id = row_number()) %>%
     unnest_tokens(word, !!sym(text_col)) %>%
     count(!!sym(id_col), word, sort = TRUE) %>%
     bind_tf_idf(word, !!sym(id_col), n) %>%
-    distinct(word, .keep_all = TRUE) %>%
-    arrange(desc(tf_idf)) %>%
-    head(10) %>%
-    kable()
+    group_by(word) %>% 
+    summarize(
+      avg_tf = mean(tf), 
+      avg_idf = mean(idf), 
+      avg_tf_idf = mean(tf_idf),
+      total_count = sum(n)
+    ) %>%
+    arrange(desc(avg_tf_idf)) %>%
+    head(200) %>%
+    kable(
+      format = "html",
+      digits = 5,
+      col.names = c("Word", "Avg TF", "Avg IDF", "Avg TF-IDF", "Total Count")
+    ) %>%
+    kable_styling(
+      full_width = FALSE,
+      bootstrap_options = c("striped", "hover", "condensed", "responsive")
+    )
 }
 
 
